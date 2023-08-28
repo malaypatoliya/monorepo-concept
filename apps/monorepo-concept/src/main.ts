@@ -17,12 +17,26 @@ db.sequelize.authenticate().then(() => {
 });
 
 import { AppModule } from './app.module';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+const port = process.env.PORT || 3000;
+const globalPrefix = 'api';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
-  const port = process.env.PORT || 3000;
+
+  // Create Swagger options using DocumentBuilder
+  const config = new DocumentBuilder()
+    .setTitle("NESTJS API")
+    .setDescription("This is a sample API created using NestJS and Swagger with JWT Authentication.")
+    .setVersion('1.0')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+
+  // Set up Swagger UI route
+  SwaggerModule.setup('docs', app, document);
+
   await app.listen(port);
   Logger.log(`🚀 Application is running on: http://localhost:${port}/${globalPrefix}`);
 }
